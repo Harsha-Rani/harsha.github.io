@@ -251,12 +251,12 @@
             </div>
 
             <div class="form-group">
-                <label for="keyword">Add Keywords (one at a time):</label>
+                <label for="keyword">Add Keywords:</label>
                 <div class="input-group">
-                    <input type="text" id="keyword" placeholder="Type a keyword and press Enter or click Add" />
-                    <button class="btn btn-primary" onclick="addKeyword()">Add Keyword</button>
+                    <input type="text" id="keyword" placeholder="Type keywords separated by commas: urgent, meeting, deadline" />
+                    <button class="btn btn-primary" onclick="addKeyword()">Add Keywords</button>
                 </div>
-                <div class="help-text">Add multiple words that, when found in an email, will trigger this rule</div>
+                <div class="help-text">💡 You can add one word OR multiple words separated by commas (e.g., "urgent, meeting, deadline")</div>
             </div>
 
             <div class="form-group">
@@ -293,13 +293,30 @@
 
         function addKeyword() {
             const keywordInput = document.getElementById('keyword');
-            const keyword = keywordInput.value.trim();
+            const input = keywordInput.value.trim();
             
-            if (keyword && !currentKeywords.includes(keyword.toLowerCase())) {
-                currentKeywords.push(keyword.toLowerCase());
+            if (!input) return;
+            
+            // Split by commas and/or spaces, filter out empty strings
+            const keywords = input
+                .split(/[,\s]+/) // Split by comma or space
+                .map(word => word.trim().toLowerCase())
+                .filter(word => word.length > 0 && !currentKeywords.includes(word));
+            
+            if (keywords.length > 0) {
+                currentKeywords.push(...keywords);
                 displayKeywords();
                 keywordInput.value = '';
                 keywordInput.focus();
+                
+                // Show confirmation
+                if (keywords.length === 1) {
+                    console.log(`Added: ${keywords[0]}`);
+                } else {
+                    console.log(`Added ${keywords.length} keywords: ${keywords.join(', ')}`);
+                }
+            } else {
+                alert('No new keywords to add (duplicates or empty input)');
             }
         }
 
